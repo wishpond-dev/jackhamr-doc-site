@@ -267,6 +267,17 @@
       overflow: hidden;
       transition: max-height 0.35s ease;
     }
+    .guide-content { padding: 0 28px 28px; }
+    .guide-content p { font-size: 14px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 14px; }
+    .guide-content h4 { font-size: 15px; font-weight: 600; margin: 20px 0 10px; }
+    .guide-content h4:first-child { margin-top: 0; }
+    .guide-content ul { list-style: none; padding: 0; margin: 0 0 14px; }
+    .guide-content li {
+      font-size: 14px; color: var(--text-secondary); line-height: 1.7;
+      padding-left: 18px; position: relative; margin-bottom: 8px;
+    }
+    .guide-content li::before { content: '▸'; position: absolute; left: 0; color: var(--primary); }
+    .guide-content .code-block { margin-bottom: 14px; }
 
     /* Pipeline indicator */
     .pipeline-bar {
@@ -884,7 +895,29 @@
         </div>
         <svg class="guide-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
-      <div class="guide-body" id="guide-body-product" role="region" aria-labelledby="guide-header-product" aria-hidden="true"></div>
+      <div class="guide-body" id="guide-body-product" role="region" aria-labelledby="guide-header-product" aria-hidden="true"><div class="guide-content">
+        <p>For a product manager, JackHamr moves the spec-writing bottleneck off your plate without taking you out of the decision. You still decide what to build and why; the spec-builder agent turns that decision into a complete, structured spec — user journey, architecture diagram, acceptance criteria, gap analysis, mockups, and a PDF — and then stops at Gate A so you can review and approve before an implementation plan even exists. Nothing gets built on a spec you haven't seen.</p>
+        <h4>Use Cases</h4>
+        <ul>
+          <li>Turn a one-paragraph feature idea or a rough PRD into a full spec.md with user stories, acceptance criteria, and visual mockups, ready to hand to engineering</li>
+          <li>Run gap analysis on a feature that's "mostly done" to surface what's actually missing before you promise a launch date</li>
+          <li>Use Gate A as your review checkpoint — approve, or send back with comments, before the implementation-planner agent even starts</li>
+          <li>Triage an incoming bug report into a scoped fix-spec (root cause, affected components, acceptance criteria) without pulling an engineer off their current task just to investigate</li>
+          <li>Track feature work as it moves through spec → plan → build → test → review → ship on the board, so you always know the real status without asking in standup</li>
+          <li>Generate a testing requirements section (unit + E2E test scenarios) alongside the spec, so "done" has a concrete, checkable definition from day one</li>
+        </ul>
+        <h4>Example Prompt</h4>
+        <div class="code-block">"Spec out a CSV export feature for the reporting page — users should be able to export the current filtered view, not just the full table."</div>
+        <p>JackHamr's conductor spawns the spec-builder agent, which reads your brief, drafts the full spec (including an explicit "filtered view vs. full table" acceptance criterion so that ambiguity can't slip through), generates mockups of the export button and a loading state, and produces a PDF. The pipeline then pauses at Gate A for your review.</p>
+        <h4>Best-Practice Tips</h4>
+        <ul>
+          <li>Write the initial brief in plain language — the spec-builder is built to ask clarifying questions and document assumptions, not to require a formal PRD upfront</li>
+          <li>Actually read the Gap Analysis section before approving Gate A — it's where hidden scope surfaces</li>
+          <li>Use fix mode (a lighter-weight spec pass with no mockups) for bug reports where you just need root cause + acceptance criteria fast</li>
+          <li>Treat the generated acceptance criteria as the contract for "done" — if QA and engineering disagree later about what shipped, the spec is the source of truth</li>
+          <li>Keep specs in the same repo as the code they describe so history and context stay attached to the feature, not scattered across a separate doc tool</li>
+        </ul>
+      </div></div>
     </div>
     <div class="guide-card">
       <button type="button" class="guide-header" aria-expanded="false" aria-controls="guide-body-swe" id="guide-header-swe">
@@ -895,7 +928,29 @@
         </div>
         <svg class="guide-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
-      <div class="guide-body" id="guide-body-swe" role="region" aria-labelledby="guide-header-swe" aria-hidden="true"></div>
+      <div class="guide-body" id="guide-body-swe" role="region" aria-labelledby="guide-header-swe" aria-hidden="true"><div class="guide-content">
+        <p>For engineers, JackHamr isn't a single chatbot you prompt for snippets — it's an orchestrated pipeline of named, specialized agents that each own one phase: an implementation-planner maps the codebase and writes a file-level plan, a developer implements it and runs builds until they pass, a qa-tester runs E2E and unit tests against the spec's acceptance criteria, and a code-reviewer audits the resulting diff before it's considered done. A conductor agent owns the whole run and enforces two approval gates — after the spec, and after the plan — so you're reviewing architecture decisions before code exists, not after.</p>
+        <h4>Use Cases</h4>
+        <ul>
+          <li>Hand an approved spec to the implementation-planner and get back a concrete, file-by-file plan you can review and redirect before any code is written (Gate B)</li>
+          <li>Let the developer agent implement the plan inside a hosted cloud environment — isolated, disposable, and gone the moment the task is done, so it never touches your local machine</li>
+          <li>Get an automatic qa-tester pass (E2E + unit tests against the spec's stated acceptance criteria) and a code-reviewer pass (quality, security, spec compliance) before a diff lands in your queue for final review</li>
+          <li>Package house conventions (naming, error-handling patterns, test structure) into a reusable skill once, instead of repeating the same PR comments across every review</li>
+          <li>Use memory so an agent working on your codebase for the fifth time doesn't need the same "here's how our auth module works" explanation you gave it the first time</li>
+          <li>Build a custom orchestration for a repeatable multi-step chore — a dependency upgrade sweep, a lint-rule migration — that would otherwise eat a day of manual, boring work</li>
+        </ul>
+        <h4>Example Prompt</h4>
+        <div class="code-block">"Implement the CSV export feature per spec.md. Run the full test suite and a code review before marking it done."</div>
+        <p>The conductor spawns implementation-planner first — it reads spec.md, maps the relevant files, and writes a plan. The pipeline pauses at Gate B for your review. Once approved, developer implements it in an environment, qa-tester runs the spec's E2E scenarios, and code-reviewer audits the diff for quality and spec compliance — you get a reviewed, tested change, not a raw first draft.</p>
+        <h4>Best-Practice Tips</h4>
+        <ul>
+          <li>Use Gate B deliberately — it's cheaper to redirect a bad architectural call in a plan than in a finished diff</li>
+          <li>Write skills for anything you find yourself explaining to every new agent run — conventions, gotchas, "don't touch this file for X reason" — so it's institutional knowledge, not a repeated prompt</li>
+          <li>Check memory before re-briefing an agent on a codebase quirk it may already know from a previous run</li>
+          <li>Treat the qa-tester and code-reviewer passes as a first review layer, not a replacement for your own — they check against the spec and code quality, not judgment calls only a human on the team would make</li>
+          <li>Use isolated hosted environments for anything experimental or destructive (schema migrations, dependency bumps) so a bad run can't corrupt your local setup</li>
+        </ul>
+      </div></div>
     </div>
     <div class="guide-card">
       <button type="button" class="guide-header" aria-expanded="false" aria-controls="guide-body-sales" id="guide-header-sales">
@@ -906,7 +961,28 @@
         </div>
         <svg class="guide-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
-      <div class="guide-body" id="guide-body-sales" role="region" aria-labelledby="guide-header-sales" aria-hidden="true"></div>
+      <div class="guide-body" id="guide-body-sales" role="region" aria-labelledby="guide-header-sales" aria-hidden="true"><div class="guide-content">
+        <p>For sales engineers and AEs running technical evaluations, JackHamr's value is turning "can it do X for our stack" into something concrete a prospect's own engineers can review, rather than a verbal promise made in a demo call. Because the platform's spec-builder produces real architecture diagrams and data-flow descriptions from documented capabilities, you can generate a prospect-specific technical-fit spec during an evaluation cycle — and because environments are real hosted sandboxes, you can show a live workflow instead of a screenshot.</p>
+        <h4>Use Cases</h4>
+        <ul>
+          <li>Generate a technical-fit spec that maps a prospect's stated stack (e.g. GitHub + Jira + Slack) onto JackHamr's board, integrations, and pipeline model, showing exactly how their triage-to-ship workflow would run</li>
+          <li>Spin up a hosted environment to demo a real pipeline run against a sample repo that resembles the prospect's actual codebase, instead of a canned recording</li>
+          <li>Answer an RFP or security questionnaire technical question by pointing to the actual documented capability (e.g. "how are approval gates enforced") rather than guessing</li>
+          <li>Use the board to track POC engineering tasks committed to during a sales cycle, so nothing promised during a call gets forgotten before the follow-up</li>
+          <li>Package a repeatable demo script as a skill so every AE on the team runs the same accurate, up-to-date walkthrough instead of an outdated personal deck</li>
+        </ul>
+        <h4>Example Prompt</h4>
+        <div class="code-block">"This prospect's stack is GitHub, Jira, and Slack. Build a one-pager spec showing how JackHamr's board and integrations would fit their current triage-to-ship workflow."</div>
+        <p>The spec-builder agent produces a scoped document — an architecture diagram, a component map showing where each of their existing tools plugs in, and a described end-to-end flow — grounded entirely in already-shipped capabilities, ready to walk through live with their engineering stakeholders.</p>
+        <h4>Best-Practice Tips</h4>
+        <ul>
+          <li>Treat every generated prospect spec as a draft pending Gate A review with an internal engineer before it goes to the customer — don't let a generated document become an accidental commitment</li>
+          <li>Never promise a capability the spec-builder didn't generate from already-documented functionality — if it's not on the site today, it's not something to demo as working</li>
+          <li>Use environments, not screenshots, whenever a prospect's evaluation criteria include "show me it actually running"</li>
+          <li>Loop engineering in via a board task the moment a POC requires anything beyond a standard demo — don't quietly commit engineering time in a sales call</li>
+          <li>Keep the technical-fit spec after the deal closes — it becomes the onboarding document for the customer's own engineering team</li>
+        </ul>
+      </div></div>
     </div>
     <div class="guide-card">
       <button type="button" class="guide-header" aria-expanded="false" aria-controls="guide-body-marketing" id="guide-header-marketing">
@@ -917,7 +993,29 @@
         </div>
         <svg class="guide-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
-      <div class="guide-body" id="guide-body-marketing" role="region" aria-labelledby="guide-header-marketing" aria-hidden="true"></div>
+      <div class="guide-body" id="guide-body-marketing" role="region" aria-labelledby="guide-header-marketing" aria-hidden="true"><div class="guide-content">
+        <p>For marketing, JackHamr's pipeline-plus-gate model maps cleanly onto content production: draft, review, publish. You can orchestrate a run that produces multiple content assets from one brief, but nothing publishes automatically — the approval gate is the review checkpoint that already fits how marketing content should work, so a generated draft never becomes a published post without a human saying yes.</p>
+        <h4>Use Cases</h4>
+        <ul>
+          <li>Orchestrate a single run that drafts a blog post, several social copy variants, and an internal one-slide summary from one campaign brief — reviewed together before anything ships</li>
+          <li>Encode your brand voice and style guide once as a skill, so every content-generation run inherits it automatically instead of re-briefing tone each time</li>
+          <li>Use an approval gate before publish as a mandatory human check on anything customer-facing — the pipeline pauses, it doesn't ship on its own</li>
+          <li>Track a content calendar as board cards moving through draft → review → published stages, giving engineering and marketing shared visibility into what's in flight</li>
+          <li>Use memory so campaign context and past decisions ("we tried this angle in Q1, it underperformed") persist across sessions instead of getting re-explained every time</li>
+          <li>Generate mockups for a landing-page variant or feature announcement graphic to pressure-test messaging before a full design pass</li>
+        </ul>
+        <h4>Example Prompt</h4>
+        <div class="code-block">"Draft a launch post for the new Guides section: one blog post, three social variants, and a one-slide internal summary. Pause for my review before anything publishes."</div>
+        <p>The conductor runs a content-drafting pass across all four assets in one go, using your brand-voice skill for consistent tone, then stops at the approval gate — you review everything together, approve or send back specific pieces, and only approved copy moves forward.</p>
+        <h4>Best-Practice Tips</h4>
+        <ul>
+          <li>Invest in a brand-voice skill early — it's the single highest-leverage thing that makes every subsequent draft sound like you instead of generic marketing copy</li>
+          <li>Always use an approval gate for anything customer-facing — never let a pipeline auto-publish</li>
+          <li>Log campaign learnings (what worked, what didn't) into memory so future drafts build on real history instead of starting from zero every time</li>
+          <li>Treat every generated draft as a first pass a human edits, not a finished asset — speed comes from skipping the blank page, not skipping review</li>
+          <li>Use the board to keep marketing's in-flight content visible to engineering, especially for anything referencing a feature that isn't shipped yet</li>
+        </ul>
+      </div></div>
     </div>
     <div class="guide-card">
       <button type="button" class="guide-header" aria-expanded="false" aria-controls="guide-body-finance" id="guide-header-finance">
@@ -928,7 +1026,28 @@
         </div>
         <svg class="guide-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
-      <div class="guide-body" id="guide-body-finance" role="region" aria-labelledby="guide-header-finance" aria-hidden="true"></div>
+      <div class="guide-body" id="guide-body-finance" role="region" aria-labelledby="guide-header-finance" aria-hidden="true"><div class="guide-content">
+        <p>For finance, JackHamr is less something you use day-to-day and more something you evaluate and model the ROI of adopting elsewhere in the org. Because the spec-builder documents its assumptions explicitly (as an Acceptance Criteria and Open Questions table, not a hidden formula), a finance stakeholder can request a cost-savings or time-savings model as a structured spec and actually audit the reasoning behind the number, rather than taking someone else's spreadsheet on faith.</p>
+        <h4>Use Cases</h4>
+        <ul>
+          <li>Request a spec that models estimated engineering-hours saved if a team adopts a specific JackHamr capability (e.g. automated code review on all PRs over a size threshold), with assumptions stated explicitly and open questions flagged rather than hidden</li>
+          <li>Use the acceptance criteria section of any such spec as the basis for measuring realized savings after adoption, instead of a one-time hand-wavy estimate</li>
+          <li>Use approval gates as a structural analog for a spend sign-off checkpoint on anything tied to environment usage scaling</li>
+          <li>Build a skill for a recurring finance process (e.g. a monthly close checklist walkthrough) so the documentation of that process — not the actual financial data — stays consistent across cycles</li>
+          <li>Keep a memory page of finance-approved modeling assumptions (e.g. "assume $X/engineer-hour") so every future model an agent builds is consistent with the last one, instead of re-litigating assumptions each time</li>
+        </ul>
+        <h4>Example Prompt</h4>
+        <div class="code-block">"Build a one-page spec estimating cost savings if engineering moves code review to JackHamr's code-reviewer agent for all PRs over 200 lines, using our standard assumptions."</div>
+        <p>The spec-builder produces a spec with an explicit assumptions table, a described methodology, and acceptance criteria defining exactly how "savings realized" would be measured post-adoption — a document you can hand to a stakeholder and defend, not a single unexplained number.</p>
+        <h4>Best-Practice Tips</h4>
+        <ul>
+          <li>Treat every generated model as a draft to verify manually — confirm the stated assumptions match reality before using the number in a decision</li>
+          <li>Require a human sign-off (mirroring an approval gate) on anything with a dollar commitment attached, rather than acting on a generated estimate directly</li>
+          <li>Maintain a memory page of standing, finance-approved modeling assumptions so future estimates stay internally consistent quarter over quarter</li>
+          <li>Don't route sensitive, unreleased financial data through a hosted environment without first confirming your organization's data-handling policy covers it — this platform has no dedicated finance-data controls beyond your own environment configuration</li>
+          <li>Use the board to track recurring, process-style finance automation tasks (e.g. close-checklist documentation runs) the same way engineering tracks feature work</li>
+        </ul>
+      </div></div>
     </div>
     <div class="guide-card">
       <button type="button" class="guide-header" aria-expanded="false" aria-controls="guide-body-legal" id="guide-header-legal">
@@ -939,7 +1058,28 @@
         </div>
         <svg class="guide-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
-      <div class="guide-body" id="guide-body-legal" role="region" aria-labelledby="guide-header-legal" aria-hidden="true"></div>
+      <div class="guide-body" id="guide-body-legal" role="region" aria-labelledby="guide-header-legal" aria-hidden="true"><div class="guide-content">
+        <p>For legal and compliance reviewers, the most relevant part of JackHamr isn't a feature you'd use directly — it's the fact that every spec the platform produces already includes an architecture diagram and, where relevant, a data schema section describing exactly what data moves where. That means you can require a "data-flow spec" as a standing precondition before engineering builds any new integration that touches customer or employee data, and review it before code exists rather than after.</p>
+        <h4>Use Cases</h4>
+        <ul>
+          <li>Require a spec — specifically its Architecture Diagram and Data Schema sections — for any new third-party integration before implementation begins, so data-flow questions get raised at design time, not during a post-launch audit</li>
+          <li>Use the platform's approval gates as the technical analog of a legal sign-off checkpoint: nothing proceeds past Gate A (spec approved) or Gate B (plan approved) without an explicit yes</li>
+          <li>Read the Out of Scope section of any spec closely — it's the most reliable place to catch quietly-expanding scope before it becomes a compliance gap</li>
+          <li>Track legal-review tasks on the same board engineering uses, so a feature can't silently ship without a recorded sign-off</li>
+          <li>Maintain a memory page of standing legal/compliance requirements so future specs get written against them automatically instead of relying on every engineer remembering the current policy</li>
+        </ul>
+        <h4>Example Prompt</h4>
+        <div class="code-block">"Before we build the Slack integration, generate a spec describing exactly what customer data would flow through it, and where it would be stored."</div>
+        <p>The spec-builder produces a spec whose Architecture Diagram and Data Schema sections lay out the full data path — what's read from Slack, what's persisted, what's transient — reviewable before any implementation work starts, rather than reconstructed after the fact from code.</p>
+        <h4>Best-Practice Tips</h4>
+        <ul>
+          <li>Make the Data Schema and Architecture Diagram sections a mandatory Gate A review item for any spec touching customer or employee data — don't approve without reading them</li>
+          <li>Never skip an approval gate for compliance-sensitive work, even under deadline pressure — it's the one built-in checkpoint designed for exactly this</li>
+          <li>Keep a standing memory page of current legal/compliance requirements so they get incorporated into specs by default rather than caught late</li>
+          <li>Require sign-off to be recorded in the relevant board task's notes, not just given verbally, for auditability</li>
+          <li>Review generated content (in Guides, Marketing copy, etc.) for accuracy claims about the platform before it's published externally — speculative content should never overstate a capability that isn't actually shipped</li>
+        </ul>
+      </div></div>
     </div>
     <div class="guide-card">
       <button type="button" class="guide-header" aria-expanded="false" aria-controls="guide-body-operations" id="guide-header-operations">
@@ -950,7 +1090,28 @@
         </div>
         <svg class="guide-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
-      <div class="guide-body" id="guide-body-operations" role="region" aria-labelledby="guide-header-operations" aria-hidden="true"></div>
+      <div class="guide-body" id="guide-body-operations" role="region" aria-labelledby="guide-header-operations" aria-hidden="true"><div class="guide-content">
+        <p>For operations, JackHamr's combination of custom orchestrations, hosted environments, and the board is well suited to recurring internal tooling work — the kind of task that's tedious enough to automate but risky enough that you want it running somewhere isolated, with its results tracked, not silently succeeding or failing in a cron job nobody watches.</p>
+        <h4>Use Cases</h4>
+        <ul>
+          <li>Build a custom orchestration for a recurring task — a weekly access review, a dependency-freshness audit, a log-rotation check — instead of a one-off script only one person remembers how to run</li>
+          <li>Run ops scripts inside a hosted, disposable environment rather than on a local machine or a shared box, so a bad run can't leave lingering state behind</li>
+          <li>File findings from an automated audit run directly as board tasks, so "the weekly check found 3 stale API keys" becomes a tracked item, not a Slack message that gets lost</li>
+          <li>Write incident/runbook steps as a skill so any agent instance — not just whichever engineer is on call — responds to a known incident type the same, consistent way</li>
+          <li>Track infrastructure and ops tickets on the same board engineering uses, giving ops the same visibility into in-flight work that engineering already has</li>
+        </ul>
+        <h4>Example Prompt</h4>
+        <div class="code-block">"Every Monday, run a spec-only audit pass that checks our integrations list for stale API keys and files a board task for anything found."</div>
+        <p>A scheduled orchestration spawns an agent that runs the audit, produces a findings report, and creates a board task for each stale key found — a recurring check that used to require someone remembering to do it manually now runs unattended and surfaces results where the team already looks.</p>
+        <h4>Best-Practice Tips</h4>
+        <ul>
+          <li>Only automate what's safe to run unattended — route anything with production-impacting side effects through an approval gate rather than letting a scheduled pipeline run it directly</li>
+          <li>Use isolated hosted environments for any script that touches infrastructure state, so a failed or buggy run can't corrupt a shared machine</li>
+          <li>Centralize runbooks as skills so incident response is consistent regardless of who (or which agent) is on call</li>
+          <li>Give ops the same board visibility engineering has — don't let ops tickets live in a separate, less-visible system</li>
+          <li>Periodically review environment usage as part of routine ops housekeeping, the same way you'd review any other recurring infrastructure cost</li>
+        </ul>
+      </div></div>
     </div>
     <div class="guide-card">
       <button type="button" class="guide-header" aria-expanded="false" aria-controls="guide-body-hr" id="guide-header-hr">
@@ -961,7 +1122,28 @@
         </div>
         <svg class="guide-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
-      <div class="guide-body" id="guide-body-hr" role="region" aria-labelledby="guide-header-hr" aria-hidden="true"></div>
+      <div class="guide-body" id="guide-body-hr" role="region" aria-labelledby="guide-header-hr" aria-hidden="true"><div class="guide-content">
+        <p>For HR, the safest and most useful application of JackHamr is internal documentation and onboarding content generation — the same spec-builder pattern used for product docs works just as well for a new-hire checklist or an internal policy FAQ. It's worth being explicit about the boundary: JackHamr has no backend or database of its own for this feature set, so anything genuinely sensitive (personnel records, case data, compensation details) belongs in your existing HR systems of record, not in agent memory or a generated doc.</p>
+        <h4>Use Cases</h4>
+        <ul>
+          <li>Draft a structured onboarding checklist for a new hire on a specific team, including which internal skills, docs, and board conventions they should learn first</li>
+          <li>Build a skill that encodes commonly-asked, low-stakes policy questions (e.g. expense process, standard leave categories) so employees get consistent, accurate answers instead of tribal knowledge</li>
+          <li>Track onboarding task completion per new hire on the board, the same way engineering tracks feature work, for shared visibility into ramp progress</li>
+          <li>Draft internal training material or an FAQ page using the same spec-builder pattern used elsewhere on this site — structured, reviewed, versioned</li>
+          <li>Keep a memory page of current internal policies so an "onboarding assistant" skill stays accurate as policies change, rather than drifting out of date silently</li>
+        </ul>
+        <h4>Example Prompt</h4>
+        <div class="code-block">"Draft a one-week onboarding checklist for a new engineer joining the platform team, including which JackHamr skills and docs they should read first."</div>
+        <p>The spec-builder produces a structured, day-by-day checklist — internal documentation, not a formal HR record — that a new hire's manager can hand over and adapt.</p>
+        <h4>Best-Practice Tips</h4>
+        <ul>
+          <li>Keep JackHamr-generated HR content strictly advisory — final policy decisions and any sensitive employee data stay in your actual HR system of record, never in agent memory or a generated document</li>
+          <li>Use skills for FAQ-style, low-stakes content only — never for confidential personnel matters or case-specific guidance</li>
+          <li>Have a human review any generated onboarding or policy material before it's rolled out to employees</li>
+          <li>Use the board to track onboarding task completion, not to store any sensitive HR case data</li>
+          <li>Treat memory pages built for this use case as internal team knowledge (e.g. "how our team uses JackHamr"), not as a substitute for an employee record system</li>
+        </ul>
+      </div></div>
     </div>
   </section>
 
