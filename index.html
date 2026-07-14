@@ -352,6 +352,8 @@
       .card { transition: none; }
       .pipeline-phase { transition: none; }
       .back-to-top { transition: none; }
+      .guide-body { transition: none; }
+      .guide-chevron { transition: none; }
       html { scroll-behavior: auto; }
     }
 
@@ -1185,6 +1187,9 @@
         .sidebar { position: static !important; width: 100% !important; height: auto !important; transform: none !important; }
         .content { margin-left: 0 !important; }
       }
+      /* GAP-2: force guide accordion bodies open and hide chevrons without JS */
+      .guide-body { max-height: none !important; overflow: visible !important; }
+      .guide-chevron { display: none !important; }
     </style>
   </noscript>
 
