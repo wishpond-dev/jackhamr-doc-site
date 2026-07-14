@@ -5,10 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JackHamr — AI Agent Orchestration Platform</title>
 
+  <!-- Favicon -->
+  <link rel="icon" href="assets/favicon.ico" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+
   <!-- Open Graph -->
   <meta property="og:title" content="JackHamr — AI Agent Orchestration Platform">
   <meta property="og:description" content="Specialist AI agents that spec, plan, build, test, and review code on hosted cloud environments. They learn from every task, so they get smarter the more you work together.">
   <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/logo.png">
 
   <!-- Tailwind Play CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -134,6 +139,8 @@
     }
     .sidebar.collapsed .sidebar-link .label { opacity: 0; display: none; }
     .sidebar.collapsed .sidebar-link { padding: 0; justify-content: center; }
+    .sidebar.collapsed .sidebar-header .label { opacity: 0; display: none; }
+    .sidebar.collapsed .sidebar-header { padding: 18px 0 8px; justify-content: center; }
     .sidebar-cta {
       margin: 12px 16px; padding: 10px;
       background: #7c3aed; color: #fff; border: none;
@@ -146,10 +153,11 @@
     .sidebar-toggle {
       background: none; border: none; color: #94a3b8;
       cursor: pointer; padding: 8px; border-radius: 6px;
-      display: none;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 16px 8px; min-height: 36px;
     }
-    @media (min-width: 768px) { .sidebar-toggle { display: flex; } }
-    @media (min-width: 768px) { #hamburger { display: none; } }
+    .sidebar.collapsed .sidebar-toggle { padding: 8px; margin: 0 8px 8px; }
+    @media (max-width: 767px) { .sidebar-toggle { display: none !important; } }
 
     /* Layout */
     .container { max-width: 1280px; margin: 0 auto; padding-left: 48px; padding-right: 48px; }
@@ -306,7 +314,7 @@
       .content { margin-left: 0; }
       .nav { padding: 12px 20px; }
       /* Hide sidebar collapse toggle on mobile (use hamburger instead) */
-      .sidebar-toggle { display: none !important; }
+      /* Already hidden via @media (max-width: 767px) in main CSS */
       /* Show hamburger on mobile */
       #hamburger { display: flex; }
       .nav-hamburger { display: flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; }
@@ -355,11 +363,11 @@
 
   <!-- Navigation -->
   <nav class="nav" id="navbar">
-    <span class="nav-brand">JackHam<span class="dot">r</span></span>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <img src="assets/logo.png" alt="JackHamr" width="28" height="28" style="border-radius:6px;" />
+      <span class="nav-brand">JackHam<span class="dot">r</span></span>
+    </div>
     <div style="display:flex;align-items:center;gap:12px;">
-      <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar" aria-expanded="true">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-      </button>
       <button class="nav-hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -368,6 +376,10 @@
 
 
   <aside class="sidebar expanded" id="sidebar" role="navigation" aria-label="Sections">
+    <div class="sidebar-header" style="display:flex;align-items:center;gap:10px;padding:18px 20px 8px;">
+      <img src="assets/logo.png" alt="JackHamr" width="24" height="24" style="border-radius:5px;flex-shrink:0;" />
+      <span class="label" style="font-weight:700;font-size:15px;letter-spacing:-0.02em;white-space:nowrap;">JackHam<span style="color:var(--primary);">r</span></span>
+    </div>
     <ul role="list">
       <li role="listitem"><a class="sidebar-link" aria-current="false" href="#overview"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg><span class="label">Overview</span></a></li>
       <li role="listitem"><a class="sidebar-link" aria-current="false" href="#pipeline"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2h6a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2V4a2 2 0 0 1 2-2z"/><path d="M9 12h6M9 16h6"/></svg><span class="label">Pipeline</span></a></li>
@@ -381,6 +393,9 @@
       <li role="listitem"><a class="sidebar-link" aria-current="false" href="#integrations"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 0-8-3-8-7s3-7 8-7c4 0 6 2 6 2"/><path d="M15 5c5 0 8 3 8 7s-3 7-8 7c-4 0-6-2-6-2"/><circle cx="12" cy="12" r="2"/></svg><span class="label">Integrations</span></a></li>
       <li role="listitem"><a class="sidebar-link" aria-current="false" href="#customization"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/><path d="M7 7c2 2 3 3 5 3s3-1 5-3M7 17c2-2 3-3 5-3s3 1 5 3"/></svg><span class="label">Customization</span></a></li>
     </ul>
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar" aria-expanded="true">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
     <button class="sidebar-cta" id="sidebarCta"><span class="cta-icon">⚡</span><span class="cta-label">Get Started</span></button>
   </aside>
   <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
