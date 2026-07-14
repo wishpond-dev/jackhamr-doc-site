@@ -1156,6 +1156,26 @@
     mqSidebar.addListener(handleBreakpoint);
   }
   handleBreakpoint(mqSidebar);
+  /* Guides accordion: single delegated listener, .open class per card is the source of truth, no mutual exclusion */
+  var guides=document.getElementById('guides');
+  if(guides){
+    guides.addEventListener('click',function(e){
+      var h=e.target.closest('.guide-header');
+      if(!h||!guides.contains(h))return;
+      var card=h.closest('.guide-card'),body=document.getElementById(h.getAttribute('aria-controls'));
+      if(!card||!body)return;
+      var open=!card.classList.contains('open');
+      card.classList.toggle('open',open);
+      h.setAttribute('aria-expanded',open?'true':'false');
+      if(open){
+        body.style.maxHeight=body.scrollHeight+'px';
+        body.removeAttribute('aria-hidden');
+      }else{
+        body.style.maxHeight='0px';
+        body.setAttribute('aria-hidden','true');
+      }
+    });
+  }
 })();
 </script>
 </body>
