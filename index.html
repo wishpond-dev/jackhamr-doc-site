@@ -1227,7 +1227,8 @@
   sl.forEach(function(l){var i=l.getAttribute('href').slice(1),s=document.getElementById(i);if(s)sc.push({l:l,s:s})});
   function onScroll(){
     var navEl=document.querySelector('.nav'),navH=navEl?navEl.getBoundingClientRect().height:72;
-    var sy=window.scrollY+navH+1,c=null,best=Infinity;
+    var sm=sc.length?(parseFloat(getComputedStyle(sc[0].s).scrollMarginTop)||navH):navH;
+    var sy=window.scrollY+sm+1,c=null,best=Infinity;
     for(var i=0;i<sc.length;i++){
       var absTop=sc[i].s.offsetTop,absBot=absTop+sc[i].s.offsetHeight;
       if(sy>=absTop&&sy<absBot){c=sc[i];break}
