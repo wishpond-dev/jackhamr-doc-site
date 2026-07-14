@@ -229,6 +229,45 @@
     .bg-teal { background: rgba(45,212,191,0.15); color: var(--accent-teal); }
     .bg-orange { background: rgba(251,146,60,0.15); color: var(--accent-orange); }
 
+    /* Guide cards (accordion) */
+    .guide-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+    .guide-card:last-child { margin-bottom: 0; }
+    .guide-card:hover {
+      border-color: rgba(124, 58, 237, 0.4);
+      box-shadow: 0 12px 40px rgba(124, 58, 237, 0.1);
+    }
+    .guide-header {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 24px 28px;
+      background: none;
+      border: none;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+    .guide-header .card-icon { margin-bottom: 0; flex-shrink: 0; }
+    .guide-header-text { flex: 1; min-width: 0; }
+    .guide-name { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
+    .guide-summary { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+    .guide-chevron { flex-shrink: 0; color: var(--text-secondary); transition: transform 0.3s ease; }
+    .guide-card.open .guide-chevron { transform: rotate(180deg); }
+    .guide-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease;
+    }
+
     /* Pipeline indicator */
     .pipeline-bar {
       display: flex; gap: 0; margin: 40px 0; border-radius: 12px; overflow: hidden;
@@ -345,6 +384,9 @@
       .footer .nav-link { padding: 8px 4px; }
       /* Footer stacks vertically on mobile */
       .footer > div[style*="display:flex"] { flex-direction: column; gap: 10px; align-items: center; }
+      /* Guide cards: 44px touch target, wrap long department names */
+      .guide-header { min-height: 44px; }
+      .guide-name { overflow-wrap: break-word; }
     }
     /* Narrow phones — extra safety against overflow */
     @media (max-width: 480px) {
@@ -822,6 +864,104 @@
         <h3>Custom Skills &amp; Orchestrations</h3>
         <p>Create custom agent skills and build custom orchestration pipelines for any workflow — from one-off scripts to repeatable multi-phase runs.</p>
       </div>
+    </div>
+  </section>
+
+  <!-- Guides -->
+  <section class="section reveal" id="guides">
+    <div class="section-label">Guides</div>
+    <div class="section-title">One platform, every department</div>
+    <div class="section-desc">
+      Product, engineering, sales, marketing, finance, legal, ops, and HR — see what JackHamr looks like from your seat. Expand a card to read the full guide.
+    </div>
+
+    <div class="guide-card">
+      <button type="button" class="guide-header" aria-expanded="false" aria-controls="guide-body-product" id="guide-header-product">
+        <div class="card-icon bg-violet"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/></svg></div>
+        <div class="guide-header-text">
+          <h3 class="guide-name">Product</h3>
+          <p class="guide-summary">Turn a rough idea into a reviewable spec — with mockups, acceptance criteria, and a gap analysis — before anyone writes code.</p>
+        </div>
+        <svg class="guide-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="guide-body" id="guide-body-product" role="region" aria-labelledby="guide-header-product" aria-hidden="true"></div>
+    </div>
+    <div class="guide-card">
+      <button type="button" class="guide-header" aria-expanded="false" aria-controls="guide-body-swe" id="guide-header-swe">
+        <div class="card-icon bg-emerald"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 8l-5 4 5 4M15 8l5 4-5 4"/></svg></div>
+        <div class="guide-header-text">
+          <h3 class="guide-name">Software Engineering</h3>
+          <p class="guide-summary">A pipeline of specialist agents — plan, build, test, review — that hands you a reviewed diff instead of a blank editor.</p>
+        </div>
+        <svg class="guide-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="guide-body" id="guide-body-swe" role="region" aria-labelledby="guide-header-swe" aria-hidden="true"></div>
+    </div>
+    <div class="guide-card">
+      <button type="button" class="guide-header" aria-expanded="false" aria-controls="guide-body-sales" id="guide-header-sales">
+        <div class="card-icon bg-sky"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div>
+        <div class="guide-header-text">
+          <h3 class="guide-name">Sales</h3>
+          <p class="guide-summary">Build a technical-fit spec or a live sandbox for a specific prospect's stack instead of promising features off a slide.</p>
+        </div>
+        <svg class="guide-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="guide-body" id="guide-body-sales" role="region" aria-labelledby="guide-header-sales" aria-hidden="true"></div>
+    </div>
+    <div class="guide-card">
+      <button type="button" class="guide-header" aria-expanded="false" aria-controls="guide-body-marketing" id="guide-header-marketing">
+        <div class="card-icon bg-amber"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l14-7v16L3 13v-2z"/><path d="M7 13v5a2 2 0 0 0 2 2h1"/></svg></div>
+        <div class="guide-header-text">
+          <h3 class="guide-name">Marketing</h3>
+          <p class="guide-summary">Draft a launch asset set — post, social variants, one-pager — that pauses for review before anything goes out.</p>
+        </div>
+        <svg class="guide-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="guide-body" id="guide-body-marketing" role="region" aria-labelledby="guide-header-marketing" aria-hidden="true"></div>
+    </div>
+    <div class="guide-card">
+      <button type="button" class="guide-header" aria-expanded="false" aria-controls="guide-body-finance" id="guide-header-finance">
+        <div class="card-icon bg-indigo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M12 20V4M20 20v-7"/></svg></div>
+        <div class="guide-header-text">
+          <h3 class="guide-name">Finance</h3>
+          <p class="guide-summary">Model the cost/time impact of adopting JackHamr for a team, with assumptions documented and reviewable, not buried in a spreadsheet.</p>
+        </div>
+        <svg class="guide-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="guide-body" id="guide-body-finance" role="region" aria-labelledby="guide-header-finance" aria-hidden="true"></div>
+    </div>
+    <div class="guide-card">
+      <button type="button" class="guide-header" aria-expanded="false" aria-controls="guide-body-legal" id="guide-header-legal">
+        <div class="card-icon bg-teal"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M5 7l-3 6a3 3 0 0 0 6 0l-3-6zM19 7l-3 6a3 3 0 0 0 6 0l-3-6zM5 7h14M8 21h8"/></svg></div>
+        <div class="guide-header-text">
+          <h3 class="guide-name">Legal</h3>
+          <p class="guide-summary">Require a data-flow spec before anything new touches customer data, and use approval gates as a compliance checkpoint that's already built in.</p>
+        </div>
+        <svg class="guide-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="guide-body" id="guide-body-legal" role="region" aria-labelledby="guide-header-legal" aria-hidden="true"></div>
+    </div>
+    <div class="guide-card">
+      <button type="button" class="guide-header" aria-expanded="false" aria-controls="guide-body-operations" id="guide-header-operations">
+        <div class="card-icon bg-orange"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.2-1.6l2-1.5-2-3.4-2.3.9a7 7 0 0 0-2.7-1.6L13.4 2h-2.8l-.4 2.8a7 7 0 0 0-2.7 1.6l-2.3-.9-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .5 0 1.1.2 1.6l-2 1.6 2 3.4 2.3-.9c.8.7 1.7 1.3 2.7 1.6l.4 2.7h2.8l.4-2.7a7 7 0 0 0 2.7-1.6l2.3.9 2-3.4-2-1.6c.1-.5.2-1 .2-1.6z"/></svg></div>
+        <div class="guide-header-text">
+          <h3 class="guide-name">Operations</h3>
+          <p class="guide-summary">Turn a recurring manual chore into a scheduled, orchestrated pipeline that runs in an isolated environment and reports its own findings.</p>
+        </div>
+        <svg class="guide-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="guide-body" id="guide-body-operations" role="region" aria-labelledby="guide-header-operations" aria-hidden="true"></div>
+    </div>
+    <div class="guide-card">
+      <button type="button" class="guide-header" aria-expanded="false" aria-controls="guide-body-hr" id="guide-header-hr">
+        <div class="card-icon bg-violet"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 2.5-5 6-5s6 2 6 5"/><circle cx="17" cy="8" r="2.5"/><path d="M15.5 15.2c2.6.4 4.5 2 4.5 4.8"/></svg></div>
+        <div class="guide-header-text">
+          <h3 class="guide-name">HR</h3>
+          <p class="guide-summary">Draft onboarding checklists and internal FAQ-style documentation — advisory only, never a system of record for sensitive employee data.</p>
+        </div>
+        <svg class="guide-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="guide-body" id="guide-body-hr" role="region" aria-labelledby="guide-header-hr" aria-hidden="true"></div>
     </div>
   </section>
 
