@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JackHamr — AI Agent Orchestration Platform</title>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="JackHamr — AI Agent Orchestration Platform">
+  <meta property="og:description" content="Specialist AI agents that spec, plan, build, test, and review code on hosted cloud environments. They learn from every task, so they get smarter the more you work together.">
+  <meta property="og:type" content="website">
+
+  <!-- Tailwind Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Inter + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* Design tokens */
+    :root {
+      --bg-slate-900: #0f172a;
+      --nav-bg: rgba(15, 23, 42, 0.8);
+      --primary: #7c3aed;
+      --text-primary: #ffffff;
+      --text-secondary: #94a3b8;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-bg: rgba(255, 255, 255, 0.035);
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-sky: #38bdf8;
+      --accent-indigo: #818cf8;
+      --accent-teal: #2dd4bf;
+      --accent-orange: #fb923c;
+      --sidebar-width: 240px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Base / fallback styles (work without Tailwind) */
+    /* CDN-failure baseline: dark bg, white text, readable content. */
+    html { scroll-behavior: auto; background: #0f172a; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-slate-900);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    /* Ensure headings/paragraphs inherit readable color even without Tailwind */
+    h1, h2, h3, h4, h5, h6, p, li, span, div { color: inherit; }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; height: auto; }
+    .mono { font-family: 'JetBrains Mono', 'Courier New', Consolas, monospace; }
+
+    a { color: inherit; text-decoration: none; }
+
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 14px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand { font-weight: 700; font-size: 18px; letter-spacing: -0.02em; }
+    .nav-brand .dot { color: var(--primary); }
+    /* .nav-links removed — element no longer in DOM (moved to sidebar) */
+    /* .nav-link kept for footer links */
+    .nav-link {
+      font-size: 13px; color: var(--text-secondary);
+      font-weight: 500; transition: color 0.2s; cursor: pointer;
+    }
+    .nav-link:hover, .nav-link.active { color: #fff; }
+    /* .nav-cta removed — CTA moved to sidebar bottom */
+    .nav-hamburger {
+      display: none; flex-direction: column; gap: 4px;
+      background: none; border: none; cursor: pointer; padding: 6px;
+    }
+    .nav-hamburger span {
+      width: 22px; height: 2px; background: #fff; border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    /* Sidebar backdrop overlay (mobile drawer) */
+    .sidebar-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 90;
+      display: none;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed; top: 0; left: 0; height: 100vh;
+      background: rgba(15,23,42,0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-right: 1px solid rgba(255,255,255,0.06);
+      width: var(--sidebar-width);
+      transition: width 0.3s ease;
+      z-index: 95;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .sidebar.expanded { --sidebar-width: 240px; }
+    .sidebar.collapsed { --sidebar-width: 60px; }
+    .sidebar ul {
+      list-style: none; padding: 16px 0; margin: 0;
+      flex: 1; overflow-y: auto;
+    }
+    .sidebar-link {
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 20px 0 17px; min-height: 44px;
+      color: #94a3b8; font-size: 13px; font-weight: 500;
+      transition: color 0.2s, background 0.2s;
+      text-decoration: none;
+      border-left: 3px solid transparent;
+    }
+    .sidebar-link:hover { color: #fff; background: rgba(255,255,255,0.03); }
+    .sidebar-link.active {
+      color: #fff; background: rgba(124,58,237,0.15);
+      border-left: 3px solid #7c3aed;
+    }
+    .sidebar-link svg {
+      width: 20px; height: 20px; flex-shrink: 0;
+      stroke: currentColor; fill: none; stroke-width: 2;
+    }
+    .sidebar-link .label {
+      white-space: nowrap; opacity: 1; transition: opacity 0.2s;
+    }
+    .sidebar.collapsed .sidebar-link .label { opacity: 0; display: none; }
+    .sidebar.collapsed .sidebar-link { padding: 0; justify-content: center; }
+    .sidebar-cta {
+      margin: 12px 16px; padding: 10px;
+      background: #7c3aed; color: #fff; border: none;
+      border-radius: 8px; font-size: 13px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .sidebar.collapsed .sidebar-cta .cta-label { display: none; }
+    .sidebar-toggle svg.rotated { transform: rotate(180deg); transition: transform 0.3s ease; }
+    .sidebar-toggle svg { transition: transform 0.3s ease; }
+    .sidebar-toggle {
+      background: none; border: none; color: #94a3b8;
+      cursor: pointer; padding: 8px; border-radius: 6px;
+      display: none;
+    }
+    @media (min-width: 768px) { .sidebar-toggle { display: flex; } }
+    @media (min-width: 768px) { #hamburger { display: none; } }
+
+    /* Layout */
+    .container { max-width: 1280px; margin: 0 auto; padding-left: 48px; padding-right: 48px; }
+    .section { padding: 80px 48px; max-width: 1280px; margin: 0 auto; scroll-margin-top: 85px; }
+    /* Prevent horizontal scroll at narrow widths */
+    html, body { max-width: 100%; }
+    .section-label {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1.5px; color: var(--primary); margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(24px, 5vw, 32px); font-weight: 700; letter-spacing: -0.03em;
+      margin-bottom: 16px; line-height: 1.2;
+    }
+    .section-desc {
+      font-size: 16px; color: var(--text-secondary); line-height: 1.7;
+      max-width: 720px; margin-bottom: 40px;
+    }
+
+    /* Hero */
+    .hero { padding: 120px 48px 60px; max-width: 1280px; margin: 0 auto; }
+    .hero h1 {
+      font-size: clamp(30px, 7vw, 48px); font-weight: 700; letter-spacing: -0.04em;
+      line-height: 1.1; margin-bottom: 20px;
+    }
+    .hero h1 .accent { color: var(--primary); }
+    .hero .tagline {
+      font-size: 18px; color: var(--text-secondary);
+      max-width: 640px; line-height: 1.6;
+    }
+
+    /* Cards */
+    .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 28px;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      min-width: 0; overflow: hidden;
+    }
+    .card:hover {
+      border-color: rgba(124, 58, 237, 0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(124, 58, 237, 0.1);
+    }
+    .card-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 18px; font-size: 20px;
+    }
+    .card h3 { font-size: 17px; font-weight: 600; margin-bottom: 10px; }
+    .card p { font-size: 13px; color: var(--text-secondary); line-height: 1.65; }
+    .card ul { list-style: none; padding: 0; margin-top: 12px; }
+    .card li {
+      font-size: 13px; color: var(--text-secondary); line-height: 1.6;
+      padding-left: 18px; position: relative; margin-bottom: 6px;
+    }
+    .card li::before {
+      content: '▸'; position: absolute; left: 0; color: var(--primary);
+    }
+
+    /* Accent backgrounds */
+    .bg-violet { background: rgba(124,58,237,0.15); color: #a78bfa; }
+    .bg-emerald { background: rgba(52,211,153,0.15); color: var(--accent-emerald); }
+    .bg-sky { background: rgba(56,189,248,0.15); color: var(--accent-sky); }
+    .bg-amber { background: rgba(251,191,36,0.15); color: var(--accent-amber); }
+    .bg-indigo { background: rgba(129,140,248,0.15); color: var(--accent-indigo); }
+    .bg-teal { background: rgba(45,212,191,0.15); color: var(--accent-teal); }
+    .bg-orange { background: rgba(251,146,60,0.15); color: var(--accent-orange); }
+
+    /* Pipeline indicator */
+    .pipeline-bar {
+      display: flex; gap: 0; margin: 40px 0; border-radius: 12px; overflow: hidden;
+    }
+    .pipeline-phase {
+      flex: 1; padding: 20px 16px; text-align: center;
+      background: rgba(255,255,255,0.02);
+      border-right: 1px solid rgba(255,255,255,0.05);
+      transition: background 0.4s, color 0.4s;
+      opacity: 0.5;
+    }
+    .pipeline-phase:last-child { border-right: none; }
+    .pipeline-phase .phase-icon { margin-bottom: 8px; opacity: 0.4; display: flex; justify-content: center; }
+    .pipeline-phase .phase-icon svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+    .pipeline-phase .phase-name {
+      font-size: 13px; font-weight: 600; color: var(--text-secondary);
+      font-family: 'JetBrains Mono', 'Courier New', Consolas, monospace;
+    }
+    .pipeline-phase.lit { background: rgba(124,58,237,0.12); opacity: 1; }
+    .pipeline-phase.lit .phase-icon { opacity: 1; }
+    .pipeline-phase.lit .phase-name { color: #fff; }
+
+    /* Code block */
+    .code-block {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 18px 22px;
+      font-family: 'JetBrains Mono', 'Courier New', Consolas, monospace;
+      font-size: 12.5px; line-height: 1.7; color: #c7d2fe;
+      margin-top: 16px; overflow-x: auto;
+    }
+
+    /* Footer */
+    .footer {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 40px 48px; text-align: center;
+      max-width: 1280px; margin: 0 auto;
+    }
+    .footer p { font-size: 13px; color: #64748b; }
+
+    /* Scroll reveal */
+    .reveal { opacity: 0; transform: translateY(20px); transition: all 0.6s ease-out; }
+    .reveal.revealed { opacity: 1; transform: translateY(0); transition: all 0.6s ease-out; }
+
+    /* Content area — shifts right to accommodate sidebar */
+    .content {
+      margin-left: var(--sidebar-width);
+      transition: margin-left 0.3s ease;
+      min-height: 100vh;
+    }
+
+    /* Back-to-top */
+    .back-to-top {
+      position: fixed; bottom: 32px; right: calc(var(--sidebar-width) + 32px); z-index: 90;
+      width: 44px; height: 44px; border-radius: 12px;
+      background: var(--primary); color: #fff; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s, transform 0.3s, right 0.3s ease;
+    }
+    .back-to-top.visible { opacity: 1; pointer-events: auto; }
+    .back-to-top:hover { transform: translateY(-2px); }
+    .back-to-top svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+
+    /* prefers-reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+      .reveal { opacity: 1 !important; transform: none !important; }
+      .reveal.revealed { transition: none !important; }
+      .card { transition: none; }
+      .pipeline-phase { transition: none; }
+      .back-to-top { transition: none; }
+      html { scroll-behavior: auto; }
+    }
+
+    /* Mobile responsive */
+    /* When sidebar takes 240px, narrow viewports need fewer grid columns */
+    @media (max-width: 900px) and (min-width: 768px) {
+      .card-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 767px) {
+      .content { margin-left: 0; }
+      .nav { padding: 12px 20px; }
+      /* Hide sidebar collapse toggle on mobile (use hamburger instead) */
+      .sidebar-toggle { display: none !important; }
+      /* Show hamburger on mobile */
+      #hamburger { display: flex; }
+      .nav-hamburger { display: flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; }
+      .nav-brand { font-size: 16px; }
+      /* Sidebar: off-canvas by default, slides in when .open */
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        width: 240px !important;
+      }
+      .sidebar.open { transform: translateX(0); }
+      /* Backdrop overlay active when drawer is open */
+      .sidebar-backdrop.active { display: block; }
+      .hero { padding: 60px 20px 40px; }
+      .hero .tagline { font-size: 16px; }
+      .section { padding: 48px 20px; }
+      .section-desc { font-size: 15px; }
+      .card-grid { grid-template-columns: 1fr; }
+      .card { padding: 22px; }
+      .pipeline-bar { flex-direction: column; border-radius: 12px; }
+      .pipeline-phase { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 12px; }
+      .pipeline-phase:last-child { border-bottom: none; }
+      .back-to-top { bottom: 20px; right: 16px; }
+      .code-block { font-size: 11.5px; padding: 14px 16px; }
+      .footer { padding: 32px 20px; }
+      /* Touch targets: min 44x44 on mobile (footer links) */
+      .nav-link { min-height: 44px; display: inline-flex; align-items: center; }
+      .footer .nav-link { padding: 8px 4px; }
+      /* Footer stacks vertically on mobile */
+      .footer > div[style*="display:flex"] { flex-direction: column; gap: 10px; align-items: center; }
+    }
+    /* Narrow phones — extra safety against overflow */
+    @media (max-width: 480px) {
+      .nav { padding: 10px 16px; }
+      .hero { padding: 48px 16px 32px; }
+      .section { padding: 40px 16px; }
+      .card { padding: 18px; }
+      .footer { padding: 28px 16px; }
+      .back-to-top { bottom: 16px; right: 12px; }
+      .pipeline-phase { padding: 14px 10px; }
+      .pipeline-phase .phase-name { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="nav" id="navbar">
+    <span class="nav-brand">JackHam<span class="dot">r</span></span>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar" aria-expanded="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button class="nav-hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+
+  <aside class="sidebar expanded" id="sidebar" role="navigation" aria-label="Sections">
+    <ul role="list">
+      <li role="listitem"><a class="sidebar-link" aria-current="false" href="#overview"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg><span class="label">Overview</span></a></li>
+      <li role="listitem"><a class="sidebar-link" aria-current="false" href="#pipeline"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2h6a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2V4a2 2 0 0 1 2-2z"/><path d="M9 12h6M9 16h6"/></svg><span class="label">Pipeline</span></a></li>
+      <li role="listitem"><a class="sidebar-link" aria-current="false" href="#agents"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a5 5 0 0 1 5 5c0 2-1 3-1 5s1 3 1 5a5 5 0 0 1-10 0c0-2 1-3 1-5s-1-3-1-5a5 5 0 0 1 5-5z"/><path d="M9 12h6"/></svg><span class="label">Agents</span></a></li>
+      <li role="listitem"><a class="sidebar-link" aria-current="false" href="#orchestration"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><path d="M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/></svg><span class="label">Orchestration</span></a></li>
+      <li role="listitem"><a class="sidebar-link" aria-current="false" href="#skills"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg><span class="label">Skills</span></a></li>
+      <li role="listitem"><a class="sidebar-link" aria-current="false" href="#memory"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg><span class="label">Memory</span></a></li>
+      <li role="listitem"><a class="sidebar-link" aria-current="false" href="#gates"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l9 4v6c0 5-4 9-9 10-5-1-9-5-9-10V6l9-4z"/><path d="M9 12l2 2 4-4"/></svg><span class="label">Gates</span></a></li>
+      <li role="listitem"><a class="sidebar-link" aria-current="false" href="#environments"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg><span class="label">Environments</span></a></li>
+      <li role="listitem"><a class="sidebar-link" aria-current="false" href="#board"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg><span class="label">Board</span></a></li>
+      <li role="listitem"><a class="sidebar-link" aria-current="false" href="#integrations"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 0-8-3-8-7s3-7 8-7c4 0 6 2 6 2"/><path d="M15 5c5 0 8 3 8 7s-3 7-8 7c-4 0-6-2-6-2"/><circle cx="12" cy="12" r="2"/></svg><span class="label">Integrations</span></a></li>
+      <li role="listitem"><a class="sidebar-link" aria-current="false" href="#customization"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/><path d="M7 7c2 2 3 3 5 3s3-1 5-3M7 17c2-2 3-3 5-3s3 1 5 3"/></svg><span class="label">Customization</span></a></li>
+    </ul>
+    <button class="sidebar-cta" id="sidebarCta"><span class="cta-icon">⚡</span><span class="cta-label">Get Started</span></button>
+  </aside>
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <main class="content" id="content">
+  <div class="hero" id="hero">
+    <div class="section-label">AI Agent Orchestration Platform</div>
+    <h1>Jack<span class="accent">Hamr</span> ships software<br>end-to-end.</h1>
+    <p class="tagline">Specialist AI agents that spec, plan, build, test, and review code on hosted cloud environments. They learn from every task, so they get smarter the more you work together.</p>
+  </div>
+
+  <!-- Overview -->
+  <section class="section" id="overview">
+    <div class="section-label">Overview</div>
+    <div class="section-title">What JackHamr Is</div>
+    <div class="section-desc">
+      JackHamr is an AI agent orchestration platform. You give it a task — it provisions a cloud environment, plans the work, writes the code, tests it, reviews it, and ships it. Every agent has a name, a personality, and a pipeline it runs end to end.
+    </div>
+
+    <!-- Pipeline progress indicator -->
+    <div class="pipeline-bar" id="pipelineBar">
+      <div class="pipeline-phase" data-phase="0">
+        <div class="phase-icon"><svg viewBox="0 0 24 24"><path d="M9 2h6a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2V4a2 2 0 0 1 2-2z"/><path d="M9 12h6M9 16h6"/></svg></div>
+        <div class="phase-name">Spec</div>
+      </div>
+      <div class="pipeline-phase" data-phase="1">
+        <div class="phase-icon"><svg viewBox="0 0 24 24"><path d="M3 6l9 4 9-4-9-4-9 4z"/><path d="M3 12l9 4 9-4M3 18l9 4 9-4"/></svg></div>
+        <div class="phase-name">Plan</div>
+      </div>
+      <div class="pipeline-phase" data-phase="2">
+        <div class="phase-icon"><svg viewBox="0 0 24 24"><path d="M14 2l6 6"/><path d="M20 8v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8l6 6z"/></svg></div>
+        <div class="phase-name">Build</div>
+      </div>
+      <div class="pipeline-phase" data-phase="3">
+        <div class="phase-icon"><svg viewBox="0 0 24 24"><path d="M10 2L3 7l3 5 7-5-3-5z"/><path d="M9 12l-3 7a3 3 0 0 0 3 4l7-4a3 3 0 0 0 1-5l-5-3"/></svg></div>
+        <div class="phase-name">Test</div>
+      </div>
+      <div class="pipeline-phase" data-phase="4">
+        <div class="phase-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg></div>
+        <div class="phase-name">Review</div>
+      </div>
+      <div class="pipeline-phase" data-phase="5">
+        <div class="phase-icon"><svg viewBox="0 0 24 24"><path d="M12 2l9 4v6c0 5-4 9-9 10-5-1-9-5-9-10V6l9-4z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <div class="phase-name">Ship</div>
+      </div>
+    </div>
+
+    <div class="card-grid" style="margin-top:40px;">
+      <div class="card reveal">
+        <div class="card-icon bg-violet">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+        </div>
+        <h3>Full Autonomy</h3>
+        <p>Spec &rarr; plan &rarr; build &rarr; test &rarr; review &rarr; ship — without human intervention between phases.</p>
+      </div>
+      <div class="card reveal">
+        <div class="card-icon bg-emerald">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="6" width="16" height="12" rx="3"/><circle cx="9" cy="12" r="1.5"/><path d="M14 12h4M4 9h16"/></svg>
+        </div>
+        <h3>Named Agents</h3>
+        <p>Every agent has a name, personality, and soul prompt. Not anonymous bots — teammates.</p>
+      </div>
+      <div class="card reveal">
+        <div class="card-icon bg-sky">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <h3>Watch It Think</h3>
+        <p>Real-time status, mood, and progress. You see what the agent is doing at every step.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pipeline -->
+  <section class="section reveal" id="pipeline" style="min-height: 1100px;">
+    <div class="section-label">Lifecycle</div>
+    <div class="section-title">spec &rarr; plan &rarr; build &rarr; test &rarr; review &rarr; ship</div>
+    <div class="section-desc">
+      Every task moves through six phases. The pipeline runs end to end — agents pick up where the last one left off, pausing only at approval gates.
+    </div>
+    <div class="card-grid">
+      <div class="card" data-phase="0">
+        <div class="card-icon bg-violet"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2h6a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2V4a2 2 0 0 1 2-2z"/><path d="M9 12h6M9 16h6"/></svg></div>
+        <h3>Spec</h3>
+        <p>Write the product spec, mockups, and PDF. Defines what to build before any code is written.</p>
+      </div>
+      <div class="card" data-phase="1">
+        <div class="card-icon bg-indigo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6l9 4 9-4-9-4-9 4z"/><path d="M3 12l9 4 9-4M3 18l9 4 9-4"/></svg></div>
+        <h3>Plan</h3>
+        <p>Implementation planning and architecture decisions. Breaks the spec into developer-sized tasks.</p>
+      </div>
+      <div class="card" data-phase="2">
+        <div class="card-icon bg-sky"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2l6 6"/><path d="M20 8v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8l6 6z"/></svg></div>
+        <h3>Build</h3>
+        <p>Code writing — one developer task at a time. Each task reads the plan and implements exactly its slice.</p>
+      </div>
+      <div class="card" data-phase="3">
+        <div class="card-icon bg-emerald"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2L3 7l3 5 7-5-3-5z"/><path d="M9 12l-3 7a3 3 0 0 0 3 4l7-4a3 3 0 0 0 1-5l-5-3"/></svg></div>
+        <h3>Test</h3>
+        <p>E2E browser tests and unit tests. QA agents verify the build against the spec.</p>
+      </div>
+      <div class="card" data-phase="4">
+        <div class="card-icon bg-amber"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg></div>
+        <h3>Review</h3>
+        <p>Code review plus product review. Checks quality, conventions, and that the result matches the spec.</p>
+      </div>
+      <div class="card" data-phase="5">
+        <div class="card-icon bg-orange"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l9 4v6c0 5-4 9-9 10-5-1-9-5-9-10V6l9-4z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <h3>Ship</h3>
+        <p>Delivery and notify user. Commits land on the branch and the run reports back.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Agents -->
+  <section class="section reveal" id="agents">
+    <div class="section-label">Agents</div>
+    <div class="section-title">Named agents with personality</div>
+    <div class="section-desc">
+      Every agent has a name, a soul prompt, and identity traits. Not anonymous bots — teammates with distinct voices.
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon bg-violet"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a5 5 0 0 1 5 5c0 2-1 3-1 5s1 3 1 5a5 5 0 0 1-10 0c0-2 1-3 1-5s-1-3-1-5a5 5 0 0 1 5-5z"/><path d="M9 12h6"/></svg></div>
+        <h3>Soul Prompts</h3>
+        <p>A short directive that shapes how an agent communicates and works.</p>
+        <div class="code-block"><span style="color:#7c3aed"># soul prompt</span><br>Quietly competent, direct,<br>dry wit. Gets things done<br>without drama.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-emerald"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></div>
+        <h3>Identity Traits</h3>
+        <p>Traits that shape every message the agent sends:</p>
+        <ul>
+          <li>Tone — formal, casual, dry, warm</li>
+          <li>Style — terse vs. verbose, technical vs. plain</li>
+          <li>Approach — cautious vs. bold, incremental vs. big-swing</li>
+          <li>Personality — how it handles mistakes and pushback</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-sky"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18M8 4V2M16 4V2"/></svg></div>
+        <h3>Named Agents</h3>
+        <p>Per-agent customization and reuse across the org:</p>
+        <ul>
+          <li>Per-agent customization of prompts and traits</li>
+          <li>Org-wide sharing — teammates use the same agent</li>
+          <li>Clone and reuse for new workflows</li>
+          <li>Distinct roles: Orchestrator, Developer, QA, Reviewer</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Orchestration -->
+  <section class="section reveal" id="orchestration">
+    <div class="section-label">Orchestration</div>
+    <div class="section-title">A conductor runs the pipeline</div>
+    <div class="section-desc">
+      The conductor is the top-level agent. It owns the pipeline, spawns phase-specific sub-agents, and routes work through approval gates.
+    </div>
+    <div class="code-block" style="text-align:center;line-height:1.5;">
+      <span style="color:#a78bfa">Conductor</span><br>
+      &nbsp;&nbsp;│<br>
+      &nbsp;&nbsp;├─► <span style="color:#34d399">spec-builder</span><br>
+      &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+      &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼<br>
+      &nbsp;&nbsp;│&nbsp;&nbsp;<span style="color:#fbbf24">[ Gate A ]</span><br>
+      &nbsp;&nbsp;│<br>
+      &nbsp;&nbsp;├─► <span style="color:#38bdf8">impl-planner</span><br>
+      &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+      &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼<br>
+      &nbsp;&nbsp;│&nbsp;&nbsp;<span style="color:#fbbf24">[ Gate B ]</span><br>
+      &nbsp;&nbsp;│<br>
+      &nbsp;&nbsp;├─► <span style="color:#818cf8">developer → qa-tester</span><br>
+      &nbsp;&nbsp;└─► <span style="color:#fb923c">code-reviewer → product-reviewer</span>
+    </div>
+    <div class="card-grid" style="margin-top:32px;">
+      <div class="card">
+        <div class="card-icon bg-violet"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><path d="M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/></svg></div>
+        <h3>Conductor</h3>
+        <p>The top-level agent that owns the pipeline. Spawns phase-specific sub-agents and tracks progress through the run.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-emerald"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></div>
+        <h3>Phase Sub-Agents</h3>
+        <p>Each phase is one sub-agent with a specific skill:</p>
+        <ul>
+          <li>spec-builder</li>
+          <li>implementation-planner</li>
+          <li>developer</li>
+          <li>qa-tester</li>
+          <li>code-reviewer</li>
+          <li>product-reviewer</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-amber"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l9 4v6c0 5-4 9-9 10-5-1-9-5-9-10V6l9-4z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <h3>Approval Gates</h3>
+        <p>Human checkpoints that pause the pipeline:</p>
+        <ul>
+          <li>Gate A — after the spec is written</li>
+          <li>Gate B — after the implementation plan</li>
+          <li>Pipeline resumes once you approve</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills -->
+  <section class="section reveal" id="skills">
+    <div class="section-label">Skills</div>
+    <div class="section-title">Reusable, shareable agent skills</div>
+    <div class="section-desc">
+      Skills are packaged instructions an agent loads on demand. Create them, share them across the org, and keep context lean with progressive disclosure.
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon bg-violet"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg></div>
+        <h3>Custom Skills</h3>
+        <p>Create and share agent skills for any workflow. A skill bundles instructions, examples, and conventions into one reusable unit.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-emerald"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h10M4 18h6"/><path d="M18 14l3 3-3 3"/></svg></div>
+        <h3>Progressive Disclosure</h3>
+        <p>Only the skill name and description load in context. Full instructions load on demand via <span class="mono">skill_read</span> — keeps prompts lean.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-sky"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <h3>Always-On Skills</h3>
+        <p>Some skills are always active — their instructions apply every turn without an explicit load. Used for cross-cutting habits like memory.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Memory -->
+  <section class="section reveal" id="memory">
+    <div class="section-label">Memory</div>
+    <div class="section-title">Inbox &rarr; librarian merge &rarr; pages</div>
+    <div class="section-desc">
+      The memory wiki compounds over time. Notes go to an inbox, a periodic librarian pass merges them into pages, and pages are searchable.
+    </div>
+    <div class="code-block" style="text-align:center;line-height:1.5;">
+      <span style="color:#34d399">Inbox</span> &nbsp;&nbsp;►&nbsp;&nbsp; <span style="color:#fbbf24">Librarian</span> &nbsp;&nbsp;►&nbsp;&nbsp; <span style="color:#7c3aed">Pages</span><br>
+      <span style="color:#64748b">append-only&nbsp;&nbsp;&nbsp;dedup &amp; merge&nbsp;&nbsp;&nbsp;indexed wiki</span>
+    </div>
+    <div class="card-grid" style="margin-top:32px;">
+      <div class="card reveal">
+        <div class="card-icon bg-emerald"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg></div>
+        <h3>Inbox</h3>
+        <p>Append-only notes — one file per observation. Nothing edits the inbox in place; it only grows.</p>
+      </div>
+      <div class="card reveal">
+        <div class="card-icon bg-amber"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg></div>
+        <h3>Librarian</h3>
+        <p>A periodic merge pass that deduplicates and organizes inbox notes into wiki pages. Single-writer: only the librarian edits pages.</p>
+      </div>
+      <div class="card reveal">
+        <div class="card-icon bg-violet"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M12 4v16M4 12h16"/></svg></div>
+        <h3>Pages</h3>
+        <p>Synthesized knowledge pages indexed in <span class="mono">index.md</span>, searchable via <span class="mono">memory_search</span>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gates -->
+  <section class="section reveal" id="gates">
+    <div class="section-label">Approval Gates</div>
+    <div class="section-title">Human checkpoints in the pipeline</div>
+    <div class="section-desc">
+      The pipeline pauses at two gates so you can review before work continues. Each gate surfaces a deck with Approve or Request changes.
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon bg-amber"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l9 4v6c0 5-4 9-9 10-5-1-9-5-9-10V6l9-4z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <h3>Gate A — Spec Approval</h3>
+        <p>You review <span class="mono">spec.md</span>, mockups, and PDF before the pipeline proceeds.</p>
+        <ul>
+          <li>Surfaced via <span class="mono">send_deck</span></li>
+          <li>Approve to continue, or Request changes</li>
+          <li>Blocks planning until resolved</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-orange"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <h3>Gate B — Plan Approval</h3>
+        <p>You review architecture decisions and the developer task breakdown before development starts.</p>
+        <ul>
+          <li>Surfaced via <span class="mono">send_deck</span></li>
+          <li>Approve to start building, or Request changes</li>
+          <li>Blocks code until resolved</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Environments -->
+  <section class="section reveal" id="environments">
+    <div class="section-label">Environments</div>
+    <div class="section-title">Docker-based cloud containers</div>
+    <div class="section-desc">
+      Each run provisions a cloud container with everything the agent needs — editor, terminal, browser, Docker, and git — preconfigured and ready.
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon bg-sky"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></div>
+        <h3>VS Code</h3>
+        <p>Editor built in. Extensions and settings ship with the container, so the agent starts in a real IDE.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-emerald"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l-2 3 2 3M17 9l2 3-2 3"/></svg></div>
+        <h3>Terminal</h3>
+        <p>Full SSH access. Agents run real shell commands, scripts, and build tools just like a dev would.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-violet"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18M3 12h18"/></svg></div>
+        <h3>Browser</h3>
+        <p>Built-in for testing and previewing. QA agents drive real E2E browser tests against the running app.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-indigo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/><rect x="16" y="9" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/></svg></div>
+        <h3>Docker</h3>
+        <p><span class="mono">docker-compose</span> support out of the box. Spin up databases, queues, and services alongside the app.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-orange"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7c-3 3-3 7 0 10M12 7c3 3 3 7 0 10"/></svg></div>
+        <h3>Git</h3>
+        <p>One-click clone from any repository, with auto-sync. Branches stay current as agents commit.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Board -->
+  <section class="section reveal" id="board">
+    <div class="section-label">Board</div>
+    <div class="section-title">DB-backed task board</div>
+    <div class="section-desc">
+      The board tracks every task in the run. Tasks are database-backed, hierarchic, and gated by evidence — no marking done without proof.
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon bg-violet"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></div>
+        <h3>DB-Backed Tasks</h3>
+        <p>Tasks live in the database, not a file. Tools read and write the board:</p>
+        <ul>
+          <li><span class="mono">task_upsert</span> — create or update a task</li>
+          <li><span class="mono">task_mark_done</span> — close a task</li>
+          <li><span class="mono">task_list</span> — read the current plan</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-emerald"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="8" height="6" rx="1.5"/><rect x="13" y="4" width="8" height="6" rx="1.5"/><rect x="3" y="14" width="8" height="6" rx="1.5"/><rect x="13" y="14" width="8" height="6" rx="1.5"/></svg></div>
+        <h3>Parent-Child Hierarchy</h3>
+        <p>Tasks nest: <span class="mono">TASK-NNN</span> parent &rarr; <span class="mono">TASK-NNN-NNN</span> children.</p>
+        <ul>
+          <li>Children must be done before the parent</li>
+          <li>Parent auto-completes when all children close</li>
+          <li>Keeps the run honest about what's finished</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-amber"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l9 4v6c0 5-4 9-9 10-5-1-9-5-9-10V6l9-4z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <h3>Gating Rules</h3>
+        <p><span class="mono">task_mark_done</span> verifies a completed sub-agent run exists.</p>
+        <ul>
+          <li>Refuses without evidence</li>
+          <li><span class="mono">PARENT_HAS_PENDING_CHILDREN</span></li>
+          <li><span class="mono">NO_EVIDENCE_DELEGATION</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Integrations -->
+  <section class="section reveal" id="integrations">
+    <div class="section-label">Integrations</div>
+    <div class="section-title">Works where you already do</div>
+    <div class="section-desc">
+      JackHamr plugs into the tools your team uses — talk to agents in Slack and track every commit in GitHub.
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon bg-violet"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="14" rx="3"/><path d="M8 10v4M12 8v8M16 11v2"/></svg></div>
+        <h3>Slack</h3>
+        <p>Talk to agents in Slack like a teammate.</p>
+        <ul>
+          <li>Share files and context inline</li>
+          <li>Get updates posted to channels</li>
+          <li>Agents live in your workspace</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-emerald"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 0-8-3-8-7s3-7 8-7c4 0 6 2 6 2"/><path d="M15 5c5 0 8 3 8 7s-3 7-8 7c-4 0-6-2-6-2"/><circle cx="12" cy="12" r="2"/></svg></div>
+        <h3>GitHub</h3>
+        <p>Tight repo integration with real-time sync.</p>
+        <ul>
+          <li>One-click repo cloning</li>
+          <li>Automatic branch creation per task</li>
+          <li>Commit tracking with real-time sync</li>
+          <li>PR creation</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Customization -->
+  <section class="section reveal" id="customization">
+    <div class="section-label">Customization</div>
+    <div class="section-title">Make it yours</div>
+    <div class="section-desc">
+      Bring your own model, pick your theme, and extend the platform with custom skills and orchestrations for any workflow.
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon bg-violet"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/><path d="M7 7c2 2 3 3 5 3s3-1 5-3M7 17c2-2 3-3 5-3s3 1 5 3"/></svg></div>
+        <h3>Bring Your Own LLM</h3>
+        <p>Use OpenAI, Anthropic, or a self-hosted model. Wire in the provider that fits your security and cost constraints.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-emerald"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg></div>
+        <h3>Dark / Light Mode</h3>
+        <p>Persistent preference — the theme you pick sticks across sessions. Dark-first, light when you want it.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-sky"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg></div>
+        <h3>Custom Skills &amp; Orchestrations</h3>
+        <p>Create custom agent skills and build custom orchestration pipelines for any workflow — from one-off scripts to repeatable multi-phase runs.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="footer" class="footer reveal">
+    <div style="font-weight:700;font-size:20px;letter-spacing:-0.02em;margin-bottom:6px;">Jack<span style="color:var(--primary)">Hamr</span></div>
+    <p style="color:var(--text-secondary);margin-bottom:8px;">AI Agent Orchestration Platform</p>
+    <p style="font-style:italic;margin-bottom:12px;">Spec it, plan it, build it, test it, review it, ship it.</p>
+    <p style="max-width:560px;margin:0 auto 18px;">This documentation was written from first-hand knowledge — the agent writing it runs inside JackHamr.</p>
+    <div style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">
+      <a class="nav-link" href="#overview">Overview</a>
+      <a class="nav-link" href="#pipeline">Pipeline</a>
+      <a class="nav-link" href="#agents">Agents</a>
+      <a class="nav-link" href="#orchestration">Orchestration</a>
+      <a class="nav-link" href="#skills">Skills</a>
+      <a class="nav-link" href="#memory">Memory</a>
+      <a class="nav-link" href="#gates">Gates</a>
+      <a class="nav-link" href="#board">Board</a>
+      <a class="nav-link" href="#customization">Customization</a>
+    </div>
+    <p>&copy; 2026 JackHamr. Built by agents, for agents.</p>
+  </footer>
+  </main>
+
+  <!-- No-JS fallback: make all reveal content visible without JavaScript -->
+  <noscript>
+    <style>
+      .reveal { opacity: 1 !important; transform: none !important; }
+      .reveal.revealed { transition: none !important; }
+      .back-to-top { display: none !important; }
+      /* GAP-1: force sidebar visible and expanded without JS */
+      .sidebar { transform: none !important; width: 240px !important; }
+      .sidebar-link span { opacity: 1 !important; }
+      .sidebar-toggle { display: none !important; }
+      #hamburger { display: none !important; }
+      .sidebar-backdrop { display: none !important; }
+      .content { margin-left: 240px !important; }
+      @media (max-width: 767px) {
+        .sidebar { position: static !important; width: 100% !important; height: auto !important; transform: none !important; }
+        .content { margin-left: 0 !important; }
+      }
+    </style>
+  </noscript>
+
+  <!-- Back-to-top button -->
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">
+    <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
+
+<script>
+(function(){
+  var R=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var rv=document.querySelectorAll('.reveal');
+  if(R){rv.forEach(function(e){e.classList.add('revealed')});}
+  else{
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('revealed');io.unobserve(e.target)}});
+    },{threshold:0.15});
+    rv.forEach(function(e){io.observe(e)});
+    /* Also reveal elements scrolled past without intersecting (instant scroll jumps) */
+    window.addEventListener('scroll',function(){
+      rv.forEach(function(e){
+        if(!e.classList.contains('revealed')){
+          var r=e.getBoundingClientRect();
+          if(r.bottom<window.innerHeight&&r.bottom>0) e.classList.add('revealed');
+          else if(r.bottom<=0){e.classList.add('revealed');io.unobserve(e)}
+        }
+      });
+    },{passive:true});
+  }
+  var sl=document.querySelectorAll('.sidebar-link'),sc=[];
+  var ph=document.querySelectorAll('#pipelineBar .pipeline-phase');
+  var ps=document.getElementById('pipeline'),tk=0;
+  sl.forEach(function(l){var i=l.getAttribute('href').slice(1),s=document.getElementById(i);if(s)sc.push({l:l,s:s})});
+  function onScroll(){
+    var navEl=document.querySelector('.nav'),navH=navEl?navEl.getBoundingClientRect().height:72;
+    var sy=window.scrollY+navH+1,c=null,best=Infinity;
+    for(var i=0;i<sc.length;i++){
+      var absTop=sc[i].s.offsetTop,absBot=absTop+sc[i].s.offsetHeight;
+      if(sy>=absTop&&sy<absBot){c=sc[i];break}
+      var d=Math.abs(sy-absTop);if(d<best){best=d;c=sc[i]}
+    }
+    if(!c&&sc.length)c=sc[0];
+    sl.forEach(function(l){l.classList.remove('active');l.setAttribute('aria-current','false')});
+    if(c){c.l.classList.add('active');c.l.setAttribute('aria-current','true')}
+    if(!R&&ph.length&&ps){
+      var r=ps.getBoundingClientRect(),h=window.innerHeight;
+      var p=Math.max(0,Math.min(1,(h-r.top)/(r.height))),n=Math.round(p*ph.length);
+      if(n>ph.length)n=ph.length;
+      for(var i=0;i<ph.length;i++){if(i<n)ph[i].classList.add('lit');else ph[i].classList.remove('lit')}
+    }
+    var he=document.getElementById('hero'),b=document.getElementById('backToTop');
+    if(b&&he){if(window.scrollY>he.offsetHeight)b.classList.add('visible');else b.classList.remove('visible')}
+    tk=0;
+  }
+  window.addEventListener('scroll',function(){if(!tk){requestAnimationFrame(onScroll);tk=1}});
+  onScroll();
+  document.querySelectorAll('.sidebar-link,a.nav-link,.nav-brand').forEach(function(l){
+    l.addEventListener('click',function(e){
+      var h=l.getAttribute('href');
+      if(h&&h.charAt(0)==='#'){e.preventDefault();var t=document.getElementById(h.slice(1));if(t)t.scrollIntoView({behavior:'smooth'})}
+      /* Close mobile drawer on link click */
+      if(sd)sd.classList.remove('open');
+      if(bk)bk.classList.remove('active');
+      if(hm)hm.setAttribute('aria-expanded','false');
+      document.body.style.overflow='';
+    });
+  });
+  var hm=document.getElementById('hamburger'),sd=document.getElementById('sidebar'),bk=document.getElementById('sidebarBackdrop');
+  function closeMobileDrawer(){
+    if(sd)sd.classList.remove('open');
+    if(bk)bk.classList.remove('active');
+    if(hm)hm.setAttribute('aria-expanded','false');
+    document.body.style.overflow='';
+  }
+  if(hm&&sd&&bk){
+    hm.addEventListener('click',function(e){
+      e.stopPropagation();
+      var open=sd.classList.toggle('open');
+      bk.classList.toggle('active',open);
+      hm.setAttribute('aria-expanded',open?'true':'false');
+      document.body.style.overflow=open?'hidden':'';
+    });
+    bk.addEventListener('click',function(){closeMobileDrawer()});
+    document.addEventListener('keydown',function(e){
+      if(e.key==='Escape'&&sd.classList.contains('open')){closeMobileDrawer()}
+    });
+  }
+  var bt=document.getElementById('backToTop');
+  if(bt)bt.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'})});
+  var stToggle=document.getElementById('sidebarToggle'),stSidebar=document.getElementById('sidebar');
+  if(stToggle&&stSidebar){
+    var stSvg=stToggle.querySelector('svg');
+    stToggle.setAttribute('aria-expanded','true');
+    stToggle.addEventListener('click',function(){
+      if(stSidebar.classList.contains('expanded')){
+        stSidebar.classList.remove('expanded');
+        stSidebar.classList.add('collapsed');
+        document.documentElement.style.setProperty('--sidebar-width','60px');
+        if(stSvg)stSvg.classList.add('rotated');
+        stToggle.setAttribute('aria-expanded','false');
+      }else if(stSidebar.classList.contains('collapsed')){
+        stSidebar.classList.remove('collapsed');
+        stSidebar.classList.add('expanded');
+        document.documentElement.style.setProperty('--sidebar-width','240px');
+        if(stSvg)stSvg.classList.remove('rotated');
+        stToggle.setAttribute('aria-expanded','true');
+      }
+    });
+
+    /* CTA button: scroll to #overview */
+    var stCta=document.getElementById('sidebarCta');
+    if(stCta){
+      stCta.addEventListener('click',function(){
+        var ov=document.getElementById('overview');
+        if(ov)ov.scrollIntoView({behavior:'smooth',block:'start'});
+        /* Close mobile drawer on CTA click */
+        var sb=document.getElementById('sidebar'),bk=document.getElementById('sidebarBackdrop'),hm=document.getElementById('hamburger');
+        if(sb)sb.classList.remove('open');
+        if(bk)bk.classList.remove('active');
+        if(hm)hm.setAttribute('aria-expanded','false');
+        document.body.style.overflow='';
+      });
+    }
+  }
+  /* GAP-2: matchMedia change listener for breakpoint state reconciliation */
+  var mqSidebar=window.matchMedia('(max-width: 767px)');
+  function handleBreakpoint(mql){
+    var sb=document.getElementById('sidebar'),bd=document.getElementById('sidebarBackdrop');
+    if(!sb)return;
+    /* Close drawer, clear backdrop, restore body scroll on any crossing */
+    sb.classList.remove('open');
+    if(bd)bd.classList.remove('active');
+    document.body.style.overflow='';
+    if(mql.matches){
+      /* Entering mobile (<768px) */
+      if(sb.classList.contains('collapsed')){
+        sb.classList.remove('collapsed');
+        sb.classList.add('expanded');
+      }
+      document.documentElement.style.setProperty('--sidebar-width','240px');
+    }else{
+      /* Entering desktop (>=768px) */
+      if(!sb.classList.contains('expanded')&&!sb.classList.contains('collapsed')){
+        sb.classList.add('expanded');
+      }
+    }
+  }
+  if(typeof mqSidebar.addEventListener==='function'){
+    mqSidebar.addEventListener('change',handleBreakpoint);
+  }else if(typeof mqSidebar.addListener==='function'){
+    mqSidebar.addListener(handleBreakpoint);
+  }
+  handleBreakpoint(mqSidebar);
+})();
+</script>
+</body>
+</html>
