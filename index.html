@@ -239,13 +239,17 @@
       transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
     }
     .guide-card:last-child { margin-bottom: 0; }
-    .guide-card:hover,
+    .guide-card:hover {
+      border-color: rgba(124, 58, 237, 0.4);
+      box-shadow: 0 12px 40px rgba(124, 58, 237, 0.1);
+    }
     .guide-card:has(.guide-header:focus-visible) {
       border-color: rgba(124, 58, 237, 0.4);
       box-shadow: 0 12px 40px rgba(124, 58, 237, 0.1);
     }
     .guide-header:focus-visible {
-      outline: none;
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
     }
     .guide-header {
       width: 100%;
