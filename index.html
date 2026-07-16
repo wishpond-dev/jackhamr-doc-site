@@ -455,6 +455,7 @@
       <li role="listitem"><a class="sidebar-link" aria-current="false" href="#board"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg><span class="label">Board</span></a></li>
       <li role="listitem"><a class="sidebar-link" aria-current="false" href="#integrations"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 0-8-3-8-7s3-7 8-7c4 0 6 2 6 2"/><path d="M15 5c5 0 8 3 8 7s-3 7-8 7c-4 0-6-2-6-2"/><circle cx="12" cy="12" r="2"/></svg><span class="label">Integrations</span></a></li>
       <li role="listitem"><a class="sidebar-link" aria-current="false" href="#customization"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/><path d="M7 7c2 2 3 3 5 3s3-1 5-3M7 17c2-2 3-3 5-3s3 1 5 3"/></svg><span class="label">Customization</span></a></li>
+      <li role="listitem"><a class="sidebar-link" aria-current="false" href="#setup"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.2-1.6l2-1.5-2-3.4-2.3.9a7 7 0 0 0-2.7-1.6L13.4 2h-2.8l-.4 2.8a7 7 0 0 0-2.7 1.6l-2.3-.9-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .5 0 1.1.2 1.6l-2 1.6 2 3.4 2.3-.9c.8.7 1.7 1.3 2.7 1.6l.4 2.7h2.8l.4-2.7a7 7 0 0 0 2.7-1.6l2.3.9 2-3.4-2-1.6c.1-.5.2-1 .2-1.6z"/></svg><span class="label">Setup</span></a></li>
       <li role="listitem"><a class="sidebar-link" aria-current="false" href="#guides"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span class="label">Guides</span></a></li>
     </ul>
     <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar" aria-expanded="true">
@@ -885,6 +886,47 @@
         <div class="card-icon bg-sky"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg></div>
         <h3>Custom Skills &amp; Orchestrations</h3>
         <p>Create custom agent skills and build custom orchestration pipelines for any workflow — from one-off scripts to repeatable multi-phase runs.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Setup -->
+  <section class="section reveal" id="setup">
+    <div class="section-label">Setup</div>
+    <div class="section-title">Get up and running</div>
+    <div class="section-desc">
+      A one-time checklist to configure JackHamr for your team — connect your repo, pick a model, and give it your first task.
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon bg-violet"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 0-8-3-8-7s3-7 8-7c4 0 6 2 6 2"/><path d="M15 5c5 0 8 3 8 7s-3 7-8 7c-4 0-6-2-6-2"/><circle cx="12" cy="12" r="2"/></svg></div>
+        <h3>1. Connect your repo</h3>
+        <p>Link a GitHub repo from the Integrations panel so agents can clone it, branch per task, and open PRs — no manual key wrangling.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-emerald"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/><path d="M7 7c2 2 3 3 5 3s3-1 5-3M7 17c2-2 3-3 5-3s3 1 5 3"/></svg></div>
+        <h3>2. Pick your model</h3>
+        <p>Wire in OpenAI, Anthropic, or a self-hosted model under Customization. Match the provider to your team's security and cost constraints before agents start running.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-sky"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="14" rx="3"/><path d="M8 10v4M12 8v8M16 11v2"/></svg></div>
+        <h3>3. Connect Slack (optional)</h3>
+        <p>Bring agents into your workspace so you can hand off tasks and get pipeline updates without leaving the channel your team already lives in.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-amber"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg></div>
+        <h3>4. Set your preferences</h3>
+        <p>Pick dark or light mode — a persistent, per-session preference that sticks across visits, not a one-time default you're stuck with.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-indigo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2h6a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2V4a2 2 0 0 1 2-2z"/><path d="M9 12h6M9 16h6"/></svg></div>
+        <h3>5. Give it your first task</h3>
+        <p>Describe what you want built or fixed in plain language. The conductor spawns spec-builder, and the pipeline runs from there — pausing at Gate A and Gate B for your review.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon bg-teal"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg></div>
+        <h3>6. Extend it (optional)</h3>
+        <p>Package house conventions as a custom skill, or chain multiple skills into a custom orchestration for anything you'd otherwise run by hand on a recurring basis.</p>
       </div>
     </div>
   </section>
