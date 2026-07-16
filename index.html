@@ -916,6 +916,7 @@
           <li>Triage an incoming bug report into a scoped fix-spec (root cause, affected components, acceptance criteria) without pulling an engineer off their current task just to investigate</li>
           <li>Track feature work as it moves through spec → plan → build → test → review → ship on the board, so you always know the real status without asking in standup</li>
           <li>Generate a testing requirements section (unit + E2E test scenarios) alongside the spec, so "done" has a concrete, checkable definition from day one</li>
+          <li>Schedule a recurring orchestration that checks competitor sites for feature or pricing changes and files a findings summary as a board task, instead of a manual weekly scan someone has to remember to do</li>
         </ul>
         <h4>Example Prompt</h4>
         <div class="code-block">"Spec out a CSV export feature for the reporting page — users should be able to export the current filtered view, not just the full table."</div>
@@ -949,6 +950,7 @@
           <li>Package house conventions (naming, error-handling patterns, test structure) into a reusable skill once, instead of repeating the same PR comments across every review</li>
           <li>Use memory so an agent working on your codebase for the fifth time doesn't need the same "here's how our auth module works" explanation you gave it the first time</li>
           <li>Build a custom orchestration for a repeatable multi-step chore — a dependency upgrade sweep, a lint-rule migration — that would otherwise eat a day of manual, boring work</li>
+          <li>Run an overnight orchestration that triages incoming GitHub issues — labeling severity and filing each as a board task — so the morning starts with a sorted queue instead of a flat, unsorted backlog</li>
         </ul>
         <h4>Example Prompt</h4>
         <div class="code-block">"Implement the CSV export feature per spec.md. Run the full test suite and a code review before marking it done."</div>
@@ -981,6 +983,7 @@
           <li>Answer an RFP or security questionnaire technical question by pointing to the actual documented capability (e.g. "how are approval gates enforced") rather than guessing</li>
           <li>Use the board to track POC engineering tasks committed to during a sales cycle, so nothing promised during a call gets forgotten before the follow-up</li>
           <li>Package a repeatable demo script as a skill so every AE on the team runs the same accurate, up-to-date walkthrough instead of an outdated personal deck</li>
+          <li>Use an environment's browser access to pull public firmographic and news signals on a target account ahead of a discovery call, then have the spec-builder turn the findings into a one-page account brief</li>
         </ul>
         <h4>Example Prompt</h4>
         <div class="code-block">"This prospect's stack is GitHub, Jira, and Slack. Build a one-pager spec showing how JackHamr's board and integrations would fit their current triage-to-ship workflow."</div>
@@ -1014,6 +1017,7 @@
           <li>Track a content calendar as board cards moving through draft → review → published stages, giving engineering and marketing shared visibility into what's in flight</li>
           <li>Use memory so campaign context and past decisions ("we tried this angle in Q1, it underperformed") persist across sessions instead of getting re-explained every time</li>
           <li>Generate mockups for a landing-page variant or feature announcement graphic to pressure-test messaging before a full design pass</li>
+          <li>Schedule a recurring orchestration that scans for brand and competitor mentions and delivers a digest to Slack, so shifts in sentiment surface before they go stale instead of during a monthly review</li>
         </ul>
         <h4>Example Prompt</h4>
         <div class="code-block">"Draft a launch post for the new Guides section: one blog post, three social variants, and a one-slide internal summary. Pause for my review before anything publishes."</div>
@@ -1046,6 +1050,7 @@
           <li>Use approval gates as a structural analog for a spend sign-off checkpoint on anything tied to environment usage scaling</li>
           <li>Build a skill for a recurring finance process (e.g. a monthly close checklist walkthrough) so the documentation of that process — not the actual financial data — stays consistent across cycles</li>
           <li>Keep a memory page of finance-approved modeling assumptions (e.g. "assume $X/engineer-hour") so every future model an agent builds is consistent with the last one, instead of re-litigating assumptions each time</li>
+          <li>Schedule a recurring orchestration that checks spend data you provide against budget thresholds and posts a Slack alert when a line crosses a limit you set, instead of catching it after the month closes</li>
         </ul>
         <h4>Example Prompt</h4>
         <div class="code-block">"Build a one-page spec estimating cost savings if engineering moves code review to JackHamr's code-reviewer agent for all PRs over 200 lines, using our standard assumptions."</div>
@@ -1078,6 +1083,7 @@
           <li>Read the Out of Scope section of any spec closely — it's the most reliable place to catch quietly-expanding scope before it becomes a compliance gap</li>
           <li>Track legal-review tasks on the same board engineering uses, so a feature can't silently ship without a recorded sign-off</li>
           <li>Maintain a memory page of standing legal/compliance requirements so future specs get written against them automatically instead of relying on every engineer remembering the current policy</li>
+          <li>Schedule a recurring orchestration that watches for updates to specific regulations relevant to the product (e.g. GDPR, PCI-DSS) and delivers a structured summary of anything that might require action, instead of relying on someone remembering to check</li>
         </ul>
         <h4>Example Prompt</h4>
         <div class="code-block">"Before we build the Slack integration, generate a spec describing exactly what customer data would flow through it, and where it would be stored."</div>
@@ -1089,6 +1095,7 @@
           <li>Keep a standing memory page of current legal/compliance requirements so they get incorporated into specs by default rather than caught late</li>
           <li>Require sign-off to be recorded in the relevant board task's notes, not just given verbally, for auditability</li>
           <li>Review generated content (in Guides, Marketing copy, etc.) for accuracy claims about the platform before it's published externally — speculative content should never overstate a capability that isn't actually shipped</li>
+          <li>For any spec or task involving genuinely sensitive documents, pair Customization's self-hosted model option with your own environment configuration so nothing sensitive is sent to a third-party model provider</li>
         </ul>
       </div></div>
     </div>
@@ -1110,6 +1117,7 @@
           <li>File findings from an automated audit run directly as board tasks, so "the weekly check found 3 stale API keys" becomes a tracked item, not a Slack message that gets lost</li>
           <li>Write incident/runbook steps as a skill so any agent instance — not just whichever engineer is on call — responds to a known incident type the same, consistent way</li>
           <li>Track infrastructure and ops tickets on the same board engineering uses, giving ops the same visibility into in-flight work that engineering already has</li>
+          <li>Trigger a multi-step orchestration when a new employee starts — provisioning tasks filed to the board, a welcome message queued in Slack, and a final task confirming every step completed — instead of a manual checklist someone has to remember to run</li>
         </ul>
         <h4>Example Prompt</h4>
         <div class="code-block">"Every Monday, run a spec-only audit pass that checks our integrations list for stale API keys and files a board task for anything found."</div>
@@ -1141,6 +1149,7 @@
           <li>Build a skill that encodes commonly-asked, low-stakes policy questions (e.g. expense process, standard leave categories) so employees get consistent, accurate answers instead of tribal knowledge</li>
           <li>Track onboarding task completion per new hire on the board, the same way engineering tracks feature work, for shared visibility into ramp progress</li>
           <li>Draft internal training material or an FAQ page using the same spec-builder pattern used elsewhere on this site — structured, reviewed, versioned</li>
+          <li>Summarize anonymized engagement-survey results into recurring themes and priority areas, delivered as a structured internal briefing for the People team instead of a raw spreadsheet</li>
           <li>Keep a memory page of current internal policies so an "onboarding assistant" skill stays accurate as policies change, rather than drifting out of date silently</li>
         </ul>
         <h4>Example Prompt</h4>
